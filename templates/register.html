@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng ký - Hệ thống điểm danh bằng khuôn mặt</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container">
+        <a class="navbar-brand" href="{{ url_for('index') }}"
+          >Hệ thống điểm danh</a
+        >
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('index') }}">Trang chủ</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="{{ url_for('register') }}"
+                >Đăng ký</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('attendance') }}"
+                >Điểm danh</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('reports') }}">Báo cáo</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-5">
+      <div class="row">
+        <div class="col-lg-8 mx-auto">
+          <div class="card">
+            <div class="card-header bg-primary text-white">
+              <h2 class="mb-0">Đăng ký người dùng mới</h2>
+            </div>
+            <div class="card-body">
+              <div class="alert alert-info">
+                <strong>Hướng dẫn:</strong> Vui lòng điền thông tin và nhấn "Bắt
+                đầu ghi" để ghi hình khuôn mặt trong 5 giây.
+              </div>
+
+              <div class="mb-3">
+                <label for="cameraIp" class="form-label">Địa chỉ IP ESP32-CAM:</label>
+                <div class="input-group">
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="cameraIp" 
+                    placeholder="Ví dụ: 192.168.1.100" 
+                    value="192.168.1.100"
+                  />
+                  <button class="btn btn-outline-primary" type="button" id="connectCamera">Kết nối</button>
+                </div>
+                <div class="form-text">Nhập địa chỉ IP của module ESP32-CAM trong mạng của bạn.</div>
+              </div>
+
+              <form id="registerForm">
+                <div class="mb-3">
+                  <label for="name" class="form-label">Họ và tên</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="name"
+                    placeholder="Nhập họ tên"
+                    required
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="userId" class="form-label">ID người dùng</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="userId"
+                    placeholder="Nhập ID"
+                    required
+                  />
+                </div>
+
+                <div class="mb-4">
+                  <label class="form-label">Ảnh khuôn mặt</label>
+                  <div class="text-center">
+                    <!-- Make the wrapper relative for safe positioning -->
+                    <div class="mb-3">
+                      <img
+                        id="cameraStream"
+                        width="480"
+                        height="360"
+                        class="border rounded"
+                        alt="ESP32-CAM Stream"
+                        style="display: none;"
+                      />
+                      <canvas
+                        id="facePreview"
+                        width="480"
+                        height="360"
+                        class="d-none mt-2"
+                      ></canvas>
+                      <canvas
+                        id="canvas"
+                        width="480"
+                        height="360"
+                        class="d-none mt-2"
+                      ></canvas>
+                    </div>
+                
+                    <!-- Thanh tiến trình quay video -->
+                    <div id="recordingIndicator" class="progress mb-2 d-none">
+                      <div
+                        id="recordingProgress"
+                        class="progress-bar bg-success"
+                        role="progressbar"
+                        style="width: 0%"
+                        aria-valuenow="0"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                      ></div>
+                    </div>
+                
+                    <div class="d-flex justify-content-center gap-2 mb-3 mt-3">
+                      <button
+                        type="button"
+                        id="capturePhoto"
+                        class="btn btn-success"
+                        disabled
+                      >
+                        Bắt đầu ghi
+                      </button>
+                    </div>
+                    <div id="photoStatus" class="alert alert-warning d-none">
+                      Vui lòng kết nối với ESP32-CAM trước
+                    </div>
+                  </div>
+                </div>
+
+                <div class="text-center">
+                  <button
+                    type="submit"
+                    id="registerBtn"
+                    class="btn btn-primary"
+                    disabled
+                  >
+                    Đăng ký
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal thông báo -->
+    <div class="modal fade" id="resultModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalTitle">Kết quả đăng ký</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body" id="modalBody">
+            <!-- Message will be inserted here -->
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-bs-dismiss="modal"
+            >
+              Đóng
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-5 bg-dark mt-5">
+      <div class="container">
+        <p class="m-0 text-center text-white">
+          Hệ thống điểm danh bằng nhận diện khuôn mặt &copy; 2025
+        </p>
+      </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/register.js') }}"></script>
+  </body>
+</html>
+```

@@ -1,0 +1,27 @@
+# requirements.txt
+# Các thư viện cần thiết cho hệ thống điểm danh bằng khuôn mặt (sử dụng OpenCV)
+
+# Web framework
+Flask==2.2.3
+Flask-SQLAlchemy==3.0.3
+
+# Xử lý khuôn mặt và hình ảnh
+opencv-python==4.7.0.72
+opencv-contrib-python==4.7.0.72  # Cần thiết cho các mô-đun mở rộng như face.LBPHFaceRecognizer
+numpy>=1.20.0
+
+# Xuất báo cáo
+openpyxl==3.1.2
+
+# Bảo mật
+Werkzeug==2.2.3
+
+# Môi trường và tiện ích
+python-dotenv==1.0.0
+gunicorn==20.1.0  # Cho triển khai production
+
+# Xử lý thời gian
+pytz==2022.7.1
+requests==2.28.1  
+base64==1.0.0  
+PIL==1.7.0  

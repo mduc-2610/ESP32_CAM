@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Điểm danh - Hệ thống điểm danh bằng khuôn mặt</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container">
+        <a class="navbar-brand" href="{{ url_for('index') }}"
+          >Hệ thống điểm danh</a
+        >
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('index') }}">Trang chủ</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('register') }}">Đăng ký</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="{{ url_for('attendance') }}"
+                >Điểm danh</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('reports') }}">Báo cáo</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-5">
+      <div class="row">
+        <div class="col-lg-8 mx-auto">
+          <div class="card">
+            <div class="card-header bg-primary text-white">
+              <h2 class="mb-0">Điểm danh bằng khuôn mặt</h2>
+            </div>
+            <div class="card-body">
+              <div class="alert alert-info">
+                <strong>Hướng dẫn:</strong> Nhìn thẳng vào camera ESP32-CAM để hệ thống
+                nhận diện khuôn mặt của bạn.
+              </div>
+
+              <div class="mb-3">
+                <label for="cameraIp" class="form-label">Địa chỉ IP ESP32-CAM:</label>
+                <div class="input-group">
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="cameraIpInput" 
+                    placeholder="Ví dụ: 192.168.1.100" 
+                    value="192.168.1.100"
+                  />
+                  <button class="btn btn-outline-primary" type="button" id="connectCamera">Kết nối</button>
+                </div>
+                <div class="form-text">Nhập địa chỉ IP của module ESP32-CAM trong mạng của bạn.</div>
+              </div>
+              
+              <div class="text-center mb-4">
+                <div class="mb-3">
+                  <h4 id="dateTimeDisplay" class="text-primary"></h4>
+                </div>
+              
+                <!-- Stream + Canvas block (stacked instead of overlaid) -->
+                <div class="mb-3">
+                  <img
+                    id="cameraStream"
+                    width="480"
+                    height="360"
+                    class="border rounded"
+                    alt="ESP32-CAM Stream"
+                    style="display: none;"
+                  />
+                  <canvas
+                    id="facePreview"
+                    width="480"
+                    height="360"
+                    class="d-none mt-2"
+                  ></canvas>
+                  <canvas
+                    id="canvas"
+                    width="480"
+                    height="360"
+                    class="d-none mt-2"
+                  ></canvas>
+                </div>
+              
+                <div class="d-flex justify-content-center gap-2 mt-3">
+                  <button
+                    type="button"
+                    id="startCamera"
+                    class="btn btn-primary"
+                    disabled
+                  >
+                    Bắt đầu nhận diện
+                  </button>
+                </div>
+              </div>
+              
+              <div id="photoStatus" class="alert alert-warning d-none">
+                Vui lòng kết nối với ESP32-CAM trước
+              </div>
+
+              <div class="text-center mt-4">
+                <p><strong>Điểm danh hôm nay</strong></p>
+                <div class="table-responsive">
+                  <table class="table table-striped table-hover">
+                    <thead>
+                      <tr>
+                        <th>Họ tên</th>
+                        <th>ID</th>
+                        <th>Thời gian</th>
+                      </tr>
+                    </thead>
+                    <tbody id="attendanceList">
+                      <!-- Dữ liệu điểm danh sẽ được thêm vào đây -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-5 bg-dark mt-5">
+      <div class="container">
+        <p class="m-0 text-center text-white">
+          Hệ thống điểm danh bằng nhận diện khuôn mặt &copy; 2025
+        </p>
+      </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/attendance.js') }}"></script>
+  </body>
+</html>
+```

@@ -65,21 +65,6 @@
                 đầu ghi" để ghi hình khuôn mặt trong 5 giây.
               </div>
 
-              <div class="mb-3">
-                <label for="cameraIp" class="form-label">Địa chỉ IP ESP32-CAM:</label>
-                <div class="input-group">
-                  <input 
-                    type="text" 
-                    class="form-control" 
-                    id="cameraIp" 
-                    placeholder="Ví dụ: 192.168.1.100" 
-                    value="192.168.1.100"
-                  />
-                  <button class="btn btn-outline-primary" type="button" id="connectCamera">Kết nối</button>
-                </div>
-                <div class="form-text">Nhập địa chỉ IP của module ESP32-CAM trong mạng của bạn.</div>
-              </div>
-
               <form id="registerForm">
                 <div class="mb-3">
                   <label for="name" class="form-label">Họ và tên</label>
@@ -105,30 +90,28 @@
                 <div class="mb-4">
                   <label class="form-label">Ảnh khuôn mặt</label>
                   <div class="text-center">
-                    <!-- Make the wrapper relative for safe positioning -->
-                    <div class="mb-3">
-                      <img
-                        id="cameraStream"
+                    <div class="position-relative mb-3">
+                      <video
+                        id="video"
                         width="480"
                         height="360"
+                        autoplay
                         class="border rounded"
-                        alt="ESP32-CAM Stream"
-                        style="display: none;"
-                      />
+                      ></video>
                       <canvas
                         id="facePreview"
                         width="480"
                         height="360"
-                        class="d-none mt-2"
+                        class="d-none position-absolute top-0 start-50 translate-middle-x"
                       ></canvas>
                       <canvas
                         id="canvas"
                         width="480"
                         height="360"
-                        class="d-none mt-2"
+                        class="d-none position-absolute top-0 start-50 translate-middle-x"
                       ></canvas>
                     </div>
-                
+
                     <!-- Thanh tiến trình quay video -->
                     <div id="recordingIndicator" class="progress mb-2 d-none">
                       <div
@@ -141,19 +124,18 @@
                         aria-valuemax="100"
                       ></div>
                     </div>
-                
-                    <div class="d-flex justify-content-center gap-2 mb-3 mt-3">
+
+                    <div class="d-flex justify-content-center gap-2 mb-3">
                       <button
                         type="button"
                         id="capturePhoto"
                         class="btn btn-success"
-                        disabled
                       >
                         Bắt đầu ghi
                       </button>
                     </div>
                     <div id="photoStatus" class="alert alert-warning d-none">
-                      Vui lòng kết nối với ESP32-CAM trước
+                      Vui lòng chụp ảnh khuôn mặt
                     </div>
                   </div>
                 </div>
@@ -217,4 +199,3 @@
     <script src="{{ url_for('static', filename='js/register.js') }}"></script>
   </body>
 </html>
-```

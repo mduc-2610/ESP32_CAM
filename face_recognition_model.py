@@ -187,7 +187,7 @@ class FaceRecognitionSystem:
 
         return face_list
 
-    def recognize_faces(self, frame, confidence_threshold=50):
+    def recognize_faces(self, frame, confidence_threshold=15):
         """Nhận diện khuôn mặt trong frame và trả về danh sách thông tin"""
         if not self.trained or not self.known_face_ids:
             print("Chưa có mô hình nhận diện khuôn mặt nào được train.")
@@ -226,6 +226,7 @@ class FaceRecognitionSystem:
 
                 # LBPH trả về khoảng cách, chuyển thành % tin cậy
                 confidence_score = 100 - min(100, confidence)
+                print("confidence_score", confidence_score)
 
                 if confidence_score > confidence_threshold and label < len(
                     self.known_face_ids
@@ -241,7 +242,7 @@ class FaceRecognitionSystem:
 
         return recognized_faces
 
-    def recognize_face(self, frame, confidence_threshold=50):
+    def recognize_face(self, frame, confidence_threshold=15):
         """Nhận diện một khuôn mặt, trả về user_id của khuôn mặt được nhận diện tốt nhất"""
         faces = self.recognize_faces(frame, confidence_threshold)
 
@@ -252,6 +253,7 @@ class FaceRecognitionSystem:
             if face.get("user_id") and face.get("confidence", 0) > best_confidence:
                 best_match = face.get("user_id")
                 best_confidence = face.get("confidence", 0)
+        print("bestface", best_match)
 
         return best_match
 

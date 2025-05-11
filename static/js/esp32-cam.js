@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", function () {
       };
       
       // Test connection
-      testImg.src = `http://${esp32Ip}/capture`;
+      testImg.src = `http://${esp32Ip}/medium_capture`;
     });
     
     // Function to switch from webcam to ESP32-CAM

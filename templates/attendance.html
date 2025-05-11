@@ -91,7 +91,6 @@
                     height="360"
                     class="border rounded"
                     alt="ESP32-CAM Stream"
-                    style="display: none;"
                   />
                   <canvas
                     id="facePreview"
@@ -114,7 +113,23 @@
                     class="btn btn-primary"
                     disabled
                   >
-                    Bắt đầu nhận diện
+                    Bắt đầu stream
+                  </button>
+                  <button
+                    type="button"
+                    id="capturePhoto"
+                    class="btn btn-success"
+                    disabled
+                  >
+                    Chụp ảnh
+                  </button>
+                  <button
+                    type="button"
+                    id="refreshCapture"
+                    class="btn btn-secondary"
+                    disabled
+                  >
+                    Làm mới
                   </button>
                 </div>
               </div>
@@ -159,4 +174,4 @@
     <script src="{{ url_for('static', filename='js/attendance.js') }}"></script>
   </body>
 </html>
-```
+`````

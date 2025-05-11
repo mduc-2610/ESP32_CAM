@@ -404,6 +404,7 @@ def api_recognize_faces():
     for face in recognized_faces:
         if face.get("user_id"):  # Chỉ xử lý những khuôn mặt đã nhận diện thành công
             user = User.query.get(face["user_id"])
+            print("user_id, name:", face["user_id"], user)
             if user:
                 # Kiểm tra xem đã điểm danh hôm nay chưa
                 existing_attendance = Attendance.query.filter_by(
@@ -420,6 +421,17 @@ def api_recognize_faces():
                     attendance_created = True
 
                 # Thêm tên người dùng vào kết quả
+                else:
+                    attendance_created = True
+                    return jsonify({
+                        "success": True,  # Vẫn trả về success: True
+                        "message": f"{user.name} đã điểm danh rồi hôm nay",
+                        "isAttended": True,
+                        "user": {
+                            "id": user.user_id,
+                            "name": user.name,
+                        },
+                    })
                 face["name"] = user.name
     result = {"success": True, "faces": recognized_faces, "attendance": attendance_created}
     logger.info(f"Attendance created: {result}")

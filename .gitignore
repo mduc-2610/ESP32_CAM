@@ -1,0 +1,4 @@
+/known_faces
+
+face_recognition_model.pkl
+face_recognition_model.xml

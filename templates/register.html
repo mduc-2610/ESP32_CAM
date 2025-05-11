@@ -12,6 +12,59 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='css/styles.css') }}"
     />
+    <style>
+      /* Container bao quanh nút đăng ký */
+      #registerButtonContainer {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        border: 2px dashed #0d6efd;
+        display: none; /* Ẩn mặc định, sẽ hiển thị sau khi chụp ảnh */
+      }
+      
+      /* Style cho mũi tên hướng xuống */
+      .arrow-down {
+        color: #0d6efd;
+        font-size: 30px;
+        margin-bottom: 10px;
+      }
+      
+      /* Style cho thông báo */
+      .instruction-text {
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+      
+      /* Animation cho nút đăng ký */
+      @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); box-shadow: 0 0 10px rgba(13, 110, 253, 0.7); }
+        100% { transform: scale(1); }
+      }
+      
+      .btn-pulse {
+        animation: pulse 1.5s infinite;
+      }
+      
+      /* Điều chỉnh vị trí các phần tử */
+      .camera-container {
+        position: relative;
+        width: 480px;
+        height: 360px;
+        margin: 0 auto;
+      }
+      
+      #video, #facePreview, #canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 8px;
+        border: 1px solid #dee2e6;
+      }
+    </style>
   </head>
   <body>
     <!-- Navigation -->
@@ -55,29 +108,14 @@
     <div class="container mt-5">
       <div class="row">
         <div class="col-lg-8 mx-auto">
-          <div class="card">
+          <div class="card shadow">
             <div class="card-header bg-primary text-white">
               <h2 class="mb-0">Đăng ký người dùng mới</h2>
             </div>
             <div class="card-body">
               <div class="alert alert-info">
                 <strong>Hướng dẫn:</strong> Vui lòng điền thông tin và nhấn "Bắt
-                đầu ghi" để ghi hình khuôn mặt trong 5 giây.
-              </div>
-
-              <div class="mb-3">
-                <label for="cameraIp" class="form-label">Địa chỉ IP ESP32-CAM:</label>
-                <div class="input-group">
-                  <input 
-                    type="text" 
-                    class="form-control" 
-                    id="cameraIp" 
-                    placeholder="Ví dụ: 192.168.1.100" 
-                    value="192.168.1.100"
-                  />
-                  <button class="btn btn-outline-primary" type="button" id="connectCamera">Kết nối</button>
-                </div>
-                <div class="form-text">Nhập địa chỉ IP của module ESP32-CAM trong mạng của bạn.</div>
+                đầu ghi". Hệ thống sẽ phát hiện khuôn mặt và ghi hình trong 5 giây.
               </div>
 
               <form id="registerForm">
@@ -105,32 +143,37 @@
                 <div class="mb-4">
                   <label class="form-label">Ảnh khuôn mặt</label>
                   <div class="text-center">
-                    <!-- Make the wrapper relative for safe positioning -->
-                    <div class="mb-3">
-                      <img
-                        id="cameraStream"
-                        width="480"
-                        height="360"
-                        class="border rounded"
-                        alt="ESP32-CAM Stream"
-                        style="display: none;"
-                      />
+                    <!-- Camera container với kích thước cố định -->
+                    <div class="camera-container mb-3">
+                      <!-- Hiển thị loading khi camera đang khởi động -->
+                      <div id="camera-loading" class="position-absolute top-50 start-50 translate-middle z-index-1">
+                        <div class="spinner-border text-primary" role="status">
+                          <span class="visually-hidden">Đang tải...</span>
+                        </div>
+                      </div>
+                      
+                      <!-- Video từ camera -->
+                      <video
+                        id="video"
+                        autoplay
+                        onloadeddata="document.getElementById('camera-loading').style.display='none';"
+                      ></video>
+                      
+                      <!-- Canvas để vẽ khung khuôn mặt -->
                       <canvas
                         id="facePreview"
-                        width="480"
-                        height="360"
-                        class="d-none mt-2"
+                        class="d-none"
                       ></canvas>
+                      
+                      <!-- Canvas để hiển thị ảnh đã chụp -->
                       <canvas
                         id="canvas"
-                        width="480"
-                        height="360"
-                        class="d-none mt-2"
+                        class="d-none"
                       ></canvas>
                     </div>
-                
+
                     <!-- Thanh tiến trình quay video -->
-                    <div id="recordingIndicator" class="progress mb-2 d-none">
+                    <div id="recordingIndicator" class="progress mb-2 d-none w-75 mx-auto">
                       <div
                         id="recordingProgress"
                         class="progress-bar bg-success"
@@ -141,29 +184,30 @@
                         aria-valuemax="100"
                       ></div>
                     </div>
-                
-                    <div class="d-flex justify-content-center gap-2 mb-3 mt-3">
+
+                    <div class="d-flex justify-content-center gap-2 mb-3">
                       <button
                         type="button"
                         id="capturePhoto"
-                        class="btn btn-success"
-                        disabled
+                        class="btn btn-success btn-lg"
                       >
                         Bắt đầu ghi
                       </button>
                     </div>
-                    <div id="photoStatus" class="alert alert-warning d-none">
-                      Vui lòng kết nối với ESP32-CAM trước
+                    <div id="photoStatus" class="alert alert-warning d-none w-75 mx-auto">
+                      Vui lòng chụp ảnh khuôn mặt
                     </div>
                   </div>
                 </div>
 
-                <div class="text-center">
+                <!-- Container riêng cho nút đăng ký - được hiển thị sau khi chụp ảnh -->
+                <div id="registerButtonContainer" class="text-center mt-4">
+                  <div class="arrow-down">↓</div>
+                  <div class="instruction-text text-primary">Nhấn nút bên dưới để hoàn tất đăng ký</div>
                   <button
                     type="submit"
                     id="registerBtn"
-                    class="btn btn-primary"
-                    disabled
+                    class="btn btn-primary btn-lg"
                   >
                     Đăng ký
                   </button>
@@ -217,4 +261,3 @@
     <script src="{{ url_for('static', filename='js/register.js') }}"></script>
   </body>
 </html>
-```
